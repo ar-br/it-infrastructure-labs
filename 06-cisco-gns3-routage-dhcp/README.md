@@ -55,12 +55,12 @@ Les étapes à réaliser :
 
 Je lance GNS3 et je crée un nouveau projet. Le nom du projet sert aussi de nom au dossier où GNS3 enregistre toutes les configurations, donc je choisis un nom explicite.
 
-![Figure 1](https://hackmd.io/_uploads/H1OcdIYcMg.png)
+![Figure 1](images/fig01.png)
 *Figure 1 — Fenêtre « New project » de GNS3 au lancement*
 
 Je place ensuite les équipements dont j'ai besoin : deux routeurs (R1 et R2), deux switchs et six postes VPCS, trois par réseau. Les VPCS sont des postes très légers intégrés à GNS3 : ils suffisent pour tester l'adressage IP, le DHCP et les pings.
 
-![Figure 2](https://hackmd.io/_uploads/Bkcc_LYqMe.png)
+![Figure 2](images/fig02.png)
 *Figure 2 — Les équipements placés dans l'espace de travail, pas encore câblés*
 
 ---
@@ -71,7 +71,7 @@ Je place ensuite les équipements dont j'ai besoin : deux routeurs (R1 et R2), d
 
 J'ouvre la console du routeur R1. Au démarrage, on voit l'IOS Cisco se charger et toutes les interfaces passer en état *administratively down* : sur un routeur Cisco, les interfaces sont désactivées par défaut.
 
-![Figure 3](https://hackmd.io/_uploads/H1jq_LFcGg.png)
+![Figure 3](images/fig03.png)
 *Figure 3 — Console de R1 au démarrage (Cisco IOS 7200, version 15.2)*
 
 Je commence par donner un nom au routeur. Ça paraît anodin, mais dès qu'il y a plusieurs équipements, un nom clair dans l'invite de commande évite de taper une configuration sur le mauvais routeur.
@@ -88,7 +88,7 @@ conf t
 hostname routeur01
 ```
 
-![Figure 4](https://hackmd.io/_uploads/r1s5_Lt5zg.png)
+![Figure 4](images/fig04.png)
 *Figure 4 — L'invite passe de `R1#` à `routeur01#`*
 
 ### 3.2 Configuration de l'interface côté LAN
@@ -99,7 +99,7 @@ Avant de configurer une interface, je liste celles du routeur pour savoir lesque
 show ip interface brief
 ```
 
-![Figure 5](https://hackmd.io/_uploads/Byhqu8K9ze.png)
+![Figure 5](images/fig05.png)
 *Figure 5 — Toutes les interfaces sont sans adresse IP et désactivées*
 
 Je choisis l'interface **GigabitEthernet1/0** pour la relier au switch du réseau local. Je lui donne l'adresse 192.168.33.4 avec un masque /24 :
@@ -117,7 +117,7 @@ exit
 - `no shutdown` : j'active l'interface, sinon elle reste désactivée malgré l'adresse IP ;
 - `exit` : je reviens en configuration globale.
 
-![Figure 6](https://hackmd.io/_uploads/Hypq_LKqzg.png)
+![Figure 6](images/fig06.png)
 *Figure 6 — Configuration de Gi1/0 : l'interface et son protocole passent à « up »*
 
 Je vérifie que la configuration a bien été prise :
@@ -126,14 +126,14 @@ Je vérifie que la configuration a bien été prise :
 show ip interface brief
 ```
 
-![Figure 7](https://hackmd.io/_uploads/rJAqOUtcGe.png)
+![Figure 7](images/fig07.png)
 *Figure 7 — GigabitEthernet1/0 a l'adresse 192.168.33.4, en état up/up*
 
 ### 3.3 Câblage du premier réseau
 
 Je relie le port g1/0 du routeur à Switch1, puis les trois postes au switch. Je fais attention à brancher chaque câble sur le bon port : le routeur doit être sur g1/0, puisque c'est la seule interface configurée.
 
-![Figure 8](https://hackmd.io/_uploads/SkJodUKqfg.png)
+![Figure 8](images/fig08.png)
 *Figure 8 — PC1, PC2 et PC3 reliés à Switch1, lui-même relié à R1*
 
 ---
@@ -163,7 +163,7 @@ wr
 
 Sur la capture, on voit que je fais quelques fautes de frappe (`ip pool`, `default-routeur`, `dns-serveur`) : l'IOS répond `% Invalid input detected` avec un `^` sous l'erreur. Je retape la bonne commande juste en dessous, et elle passe.
 
-![Figure 9](https://hackmd.io/_uploads/rkxod8K9fe.png)
+![Figure 9](images/fig09.png)
 *Figure 9 — Création du pool DHCP « LAN » puis enregistrement avec `wr`*
 
 ---
@@ -178,7 +178,7 @@ Pour tester, je donne d'abord une adresse fixe à PC1 :
 ip 192.168.33.2
 ```
 
-![Figure 10](https://hackmd.io/_uploads/BJWsO8t9Gx.png)
+![Figure 10](images/fig10.png)
 *Figure 10 — PC1 configuré en 192.168.33.2/24*
 
 Puis j'essaie de joindre le routeur :
@@ -187,7 +187,7 @@ Puis j'essaie de joindre le routeur :
 ping 192.168.33.4
 ```
 
-![Figure 11](https://hackmd.io/_uploads/BJGsuLt9fx.png)
+![Figure 11](images/fig11.png)
 *Figure 11 — Le ping vers le routeur échoue : « host not reachable »*
 
 Le ping ne passe pas, il faut trouver pourquoi. J'affiche la configuration IP de PC1 :
@@ -196,7 +196,7 @@ Le ping ne passe pas, il faut trouver pourquoi. J'affiche la configuration IP de
 show ip
 ```
 
-![Figure 12](https://hackmd.io/_uploads/BkmiO8tcGx.png)
+![Figure 12](images/fig12.png)
 *Figure 12 — PC1 n'a pas de passerelle (GATEWAY 0.0.0.0)*
 
 On voit que PC1 n'a pas de passerelle.
@@ -209,7 +209,7 @@ J'essaie alors d'obtenir une adresse en DHCP :
 ip dhcp
 ```
 
-![Figure 13](https://hackmd.io/_uploads/B1VsO8tcMx.png)
+![Figure 13](images/fig13.png)
 *Figure 13 — « Can't find dhcp server » : le DHCP ne répond pas non plus*
 
 Le DHCP ne fonctionne pas non plus. Comme ni le ping ni le DHCP ne passent, le problème est plus bas : la communication entre le poste et le routeur elle-même.
@@ -224,12 +224,12 @@ Je vérifie les points dans l'ordre, du routeur vers le câblage.
 show ip int brief
 ```
 
-![Figure 14](https://hackmd.io/_uploads/r1rou8Kcfx.png)
+![Figure 14](images/fig14.png)
 *Figure 14 — Gi1/0 est toujours en 192.168.33.4, up/up : la configuration du routeur est bonne*
 
 **Le câblage :** je contrôle dans GNS3 que chaque câble est sur le bon port.
 
-![Figure 15](https://hackmd.io/_uploads/rkIj_ItcGl.png)
+![Figure 15](images/fig15.png)
 *Figure 15 — Câblage avec les ports affichés : PC sur e0, Switch1 relié à R1 sur g1/0*
 
 Le câblage est correct. **Le trafic reçu par l'interface :** je regarde si le routeur reçoit quelque chose sur g1/0.
@@ -238,7 +238,7 @@ Le câblage est correct. **Le trafic reçu par l'interface :** je regarde si le 
 show interfaces gi1/0
 ```
 
-![Figure 16](https://hackmd.io/_uploads/HkPsd8F9Gx.png)
+![Figure 16](images/fig16.png)
 *Figure 16 — Détail de Gi1/0 : seulement 2 paquets reçus (2 broadcasts), aucune erreur*
 
 L'interface est up et sans erreur, mais ne reçoit presque rien : les pings de PC1 n'arrivent pas jusqu'au routeur. Toute la configuration étant correcte, le problème vient probablement de GNS3 lui-même, qui peut parfois bloquer une liaison après des modifications à chaud.
@@ -256,7 +256,7 @@ wr
 
 Après le redémarrage, le ping passe.
 
-![Figure 17](https://hackmd.io/_uploads/ryujdUY9Mg.png)
+![Figure 17](images/fig17.png)
 *Figure 17 — PC1 joint enfin le routeur 192.168.33.4 (5 réponses sur 5)*
 
 > ⚠️ **Correction :** c'est le redémarrage de GNS3 qui a réglé le ping. La commande `no service dhcp` coupe seulement le service DHCP ; elle n'a aucun effet sur un ping.
@@ -287,7 +287,7 @@ Je vérifie ensuite les adresses distribuées avec :
 show ip dhcp binding
 ```
 
-![Figure 18](https://hackmd.io/_uploads/SJKs_LY9fg.png)
+![Figure 18](images/fig18.png)
 *Figure 18 — Nouveau pool « client-windows » ; une adresse (192.168.33.1) est déjà attribuée automatiquement*
 
 > ⚠️ **Correction — la passerelle a été oubliée :** ce nouveau pool n'a **pas** de ligne `default-router`. Les postes reçoivent une adresse mais pas de passerelle (on le voit figure 19 : `GATEWAY 0.0.0.0`). Ils peuvent parler à leur propre réseau, mais pas au réseau de l'autre routeur. Il faut ajouter :
@@ -308,19 +308,19 @@ Je teste le DHCP depuis PC2 :
 ip dhcp
 ```
 
-![Figure 19](https://hackmd.io/_uploads/HyqsuLt5ze.png)
+![Figure 19](images/fig19.png)
 *Figure 19 — PC2 obtient 192.168.33.2/24, le DNS, le domaine mondomaine.fr et un bail de 8 h (28 800 s)*
 
 La séquence `DDORA` montre l'échange DHCP complet : **D**iscover (le poste cherche un serveur), **O**ffer (le routeur propose une adresse), **R**equest (le poste la demande), **A**ck (le routeur confirme).
 
 Je teste ensuite la communication dans le réseau. PC1 joint PC2 :
 
-![Figure 20](https://hackmd.io/_uploads/HkosdUFqMg.png)
+![Figure 20](images/fig20.png)
 *Figure 20 — Ping de PC1 vers PC2 (192.168.33.2) : 5 réponses sur 5*
 
 Et PC1 joint le routeur :
 
-![Figure 21](https://hackmd.io/_uploads/HJ2id8Y9Gg.png)
+![Figure 21](images/fig21.png)
 *Figure 21 — Ping de PC1 vers le routeur (192.168.33.4) : 5 réponses sur 5*
 
 Le premier réseau est fonctionnel.
@@ -352,10 +352,10 @@ no shutdown
 exit
 ```
 
-![Figure 22](https://hackmd.io/_uploads/BkTs_UKqGe.png)
+![Figure 22](images/fig22.png)
 *Figure 22 — Configuration de Gi2/0 sur routeur02 en 192.168.22.1*
 
-![Figure 23](https://hackmd.io/_uploads/SyCs_LFqGx.png)
+![Figure 23](images/fig23.png)
 *Figure 23 — routeur02 : Gi1/0 en 192.168.32.1 et Gi2/0 en 192.168.22.1, toutes les deux up*
 
 Même chose sur routeur01, avec l'adresse 192.168.22.3 :
@@ -368,12 +368,12 @@ no shutdown
 exit
 ```
 
-![Figure 24](https://hackmd.io/_uploads/Skk2dIK5ze.png)
+![Figure 24](images/fig24.png)
 *Figure 24 — routeur01 : Gi2/0 en 192.168.22.3, up/up*
 
 Je relie ensuite les deux routeurs par leur port g2/0.
 
-![Figure 25](https://hackmd.io/_uploads/B1-3dUt9Me.png)
+![Figure 25](images/fig25.png)
 *Figure 25 — Topologie complète : R1 et R2 reliés par g2/0, chaque routeur relié à son switch par g1/0*
 
 ### 8.2 Routage statique
@@ -392,7 +392,7 @@ Sur routeur01, j'ai entré :
 ip route 192.168.22.0 255.255.255.0 192.168.22.1
 ```
 
-![Figure 26](https://hackmd.io/_uploads/rkbn_LFqze.png)
+![Figure 26](images/fig26.png)
 *Figure 26 — Route statique entrée sur routeur01, puis `write memory`*
 
 Et sur routeur02 (après une faute de frappe `ip root` corrigée juste en dessous) :
@@ -401,7 +401,7 @@ Et sur routeur02 (après une faute de frappe `ip root` corrigée juste en dessou
 ip route 192.168.22.0 255.255.255.0 192.168.22.3
 ```
 
-![Figure 27](https://hackmd.io/_uploads/B1zndItczg.png)
+![Figure 27](images/fig27.png)
 *Figure 27 — Route statique entrée sur routeur02, puis `write memory`*
 
 > ⚠️ **Correction — les routes pointent vers le mauvais réseau :** ces deux routes visent le 192.168.22.0, c'est-à-dire le réseau de liaison. Or ce réseau est **déjà directement connecté** aux deux routeurs : la route ne sert à rien. Ce qu'il faut, c'est indiquer à chaque routeur le **LAN de l'autre** :
@@ -432,12 +432,12 @@ Je teste la liaison depuis routeur01 :
 ping 192.168.22.1
 ```
 
-![Figure 28](https://hackmd.io/_uploads/Hy73OUY9zx.png)
+![Figure 28](images/fig28.png)
 *Figure 28 — routeur01 joint routeur02 (192.168.22.1) : 100 % de réussite (5/5)*
 
 La liaison entre les deux routeurs fonctionne.
 
-![Figure 29](https://hackmd.io/_uploads/SyVhdLKqMe.png)
+![Figure 29](images/fig29.png)
 *Figure 29 — Infrastructure finale : deux LAN de trois postes reliés par deux routeurs*
 
 > ⚠️ **Correction — le test ne prouve pas encore que tout communique :** ce ping part d'un routeur vers l'autre, sur le réseau de liaison qui leur est directement connecté. Il valide le câble et l'adressage de la liaison, mais pas le routage entre les deux LAN. Pour prouver que « toutes les machines se pingent », il faut, **après** avoir corrigé les routes et ajouté la passerelle dans le DHCP, faire un ping d'un PC du LAN 1 vers un PC du LAN 2 (par exemple de PC1 vers PC4) et en faire une capture.
