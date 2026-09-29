@@ -13,7 +13,7 @@
 - Serveur DHCP sur routeur : pool, exclusion d'adresses, passerelle, DNS, durée de bail
 - Dépannage réseau méthodique : interface, câblage, trafic reçu (`show ip interface brief`, `show interfaces`)
 - Interconnexion de routeurs et routage statique (`ip route`)
-- Regard critique sur sa propre configuration : erreurs identifiées et corrections documentées
+- Relecture critique de ma propre configuration : erreurs repérées et corrections documentées
 
 ---
 
@@ -201,7 +201,7 @@ show ip
 
 On voit que PC1 n'a pas de passerelle.
 
-> ⚠️ **Correction :** l'absence de passerelle n'explique pas cet échec. PC1 (192.168.33.2) et le routeur (192.168.33.4) sont dans le **même réseau** : pour se joindre, ils n'ont pas besoin de passerelle. La passerelle ne sert que pour joindre une machine d'un **autre** réseau. La cause est ailleurs (voir la suite).
+> 🔎 **En y réfléchissant :** l'absence de passerelle n'explique pas cet échec. PC1 (192.168.33.2) et le routeur (192.168.33.4) sont dans le **même réseau** : pour se joindre, ils n'ont pas besoin de passerelle. La passerelle ne sert que pour joindre une machine d'un **autre** réseau. La cause est donc ailleurs (voir la suite).
 
 J'essaie alors d'obtenir une adresse en DHCP :
 
@@ -259,7 +259,7 @@ Après le redémarrage, le ping passe.
 ![Figure 17](images/fig17.png)
 *Figure 17 — PC1 joint enfin le routeur 192.168.33.4 (5 réponses sur 5)*
 
-> ⚠️ **Correction :** c'est le redémarrage de GNS3 qui a réglé le ping. La commande `no service dhcp` coupe seulement le service DHCP ; elle n'a aucun effet sur un ping.
+> 🔎 **Avec du recul :** c'est bien le redémarrage de GNS3 qui a réglé le ping. La commande `no service dhcp` coupe seulement le service DHCP ; elle n'a aucun effet sur un ping.
 
 ---
 
@@ -290,7 +290,7 @@ show ip dhcp binding
 ![Figure 18](images/fig18.png)
 *Figure 18 — Nouveau pool « client-windows » ; une adresse (192.168.33.1) est déjà attribuée automatiquement*
 
-> ⚠️ **Correction — la passerelle a été oubliée :** ce nouveau pool n'a **pas** de ligne `default-router`. Les postes reçoivent une adresse mais pas de passerelle (on le voit figure 19 : `GATEWAY 0.0.0.0`). Ils peuvent parler à leur propre réseau, mais pas au réseau de l'autre routeur. Il faut ajouter :
+> 🔎 **En relisant ma configuration :** je me suis rendu compte que ce nouveau pool n'a **pas** de ligne `default-router`. Les postes reçoivent une adresse mais pas de passerelle (on le voit figure 19 : `GATEWAY 0.0.0.0`). Ils peuvent parler à leur propre réseau, mais pas au réseau de l'autre routeur. Il faut donc ajouter :
 >
 > ```cisco
 > conf t
@@ -300,7 +300,7 @@ show ip dhcp binding
 > wr
 > ```
 >
-> Autre point à vérifier : le DNS `192.168.3.4` ne correspond à aucun équipement du projet. C'est sans doute une faute de frappe pour `192.168.33.4`, ou il faut remettre `8.8.8.8` comme dans le premier pool.
+> J'ai aussi repéré que le DNS `192.168.3.4` ne correspond à aucun équipement du projet : c'est une faute de frappe pour `192.168.33.4`, ou alors il faut remettre `8.8.8.8` comme dans le premier pool.
 
 Je teste le DHCP depuis PC2 :
 
@@ -404,7 +404,7 @@ ip route 192.168.22.0 255.255.255.0 192.168.22.3
 ![Figure 27](images/fig27.png)
 *Figure 27 — Route statique entrée sur routeur02, puis `write memory`*
 
-> ⚠️ **Correction — les routes pointent vers le mauvais réseau :** ces deux routes visent le 192.168.22.0, c'est-à-dire le réseau de liaison. Or ce réseau est **déjà directement connecté** aux deux routeurs : la route ne sert à rien. Ce qu'il faut, c'est indiquer à chaque routeur le **LAN de l'autre** :
+> 🔎 **En relisant ma configuration :** je me suis rendu compte que ces deux routes visent le 192.168.22.0, c'est-à-dire le réseau de liaison. Or ce réseau est **déjà directement connecté** aux deux routeurs : la route ne sert à rien. Pour que les deux LAN communiquent, il faut indiquer à chaque routeur le **LAN de l'autre** :
 >
 > Sur routeur01 (pour joindre le LAN 2) :
 > ```cisco
@@ -422,7 +422,7 @@ ip route 192.168.22.0 255.255.255.0 192.168.22.3
 > wr
 > ```
 >
-> Et supprimer les anciennes routes inutiles en ajoutant `no` devant (`no ip route 192.168.22.0 255.255.255.0 192.168.22.1` sur routeur01, idem avec `.3` sur routeur02).
+> Puis supprimer les anciennes routes inutiles en ajoutant `no` devant (`no ip route 192.168.22.0 255.255.255.0 192.168.22.1` sur routeur01, idem avec `.3` sur routeur02).
 
 ### 8.3 Test entre les routeurs
 
@@ -440,7 +440,7 @@ La liaison entre les deux routeurs fonctionne.
 ![Figure 29](images/fig29.png)
 *Figure 29 — Infrastructure finale : deux LAN de trois postes reliés par deux routeurs*
 
-> ⚠️ **Correction — le test ne prouve pas encore que tout communique :** ce ping part d'un routeur vers l'autre, sur le réseau de liaison qui leur est directement connecté. Il valide le câble et l'adressage de la liaison, mais pas le routage entre les deux LAN. Pour prouver que « toutes les machines se pingent », il faut, **après** avoir corrigé les routes et ajouté la passerelle dans le DHCP, faire un ping d'un PC du LAN 1 vers un PC du LAN 2 (par exemple de PC1 vers PC4) et en faire une capture.
+> 🔎 **Ce que ce test valide :** ce ping part d'un routeur vers l'autre, sur le réseau de liaison qui leur est directement connecté. Il valide le câble et l'adressage de la liaison, mais pas encore le routage entre les deux LAN. La prochaine étape, une fois les routes corrigées et la passerelle ajoutée dans le DHCP, sera un ping d'un PC du LAN 1 vers un PC du LAN 2 (par exemple de PC1 vers PC4).
 
 ---
 
@@ -456,7 +456,7 @@ La liaison entre les deux routeurs fonctionne.
 | Adresse exclue du DHCP | 192.168.33.4 (le routeur) |
 | Postes LAN 1 | PC1, PC2, PC3 — adresses en DHCP |
 | Postes LAN 2 | PC4, PC5, PC6 |
-| Routage | statique (à corriger, voir section 8.2) |
+| Routage | statique (routes vers les LAN distants à ajuster, voir section 8.2) |
 
 Commandes Cisco utilisées :
 
