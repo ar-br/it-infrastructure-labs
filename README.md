@@ -8,6 +8,7 @@ Ce dépôt rassemble mes projets techniques les plus complets, réalisés pendan
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%20Server%202025-0078D6?logo=windows&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-Ubuntu-E95420?logo=ubuntu&logoColor=white)
 ![PowerShell](https://img.shields.io/badge/PowerShell-scripts-5391FE?logo=powershell&logoColor=white)
+![Cisco](https://img.shields.io/badge/Cisco-IOS%20%7C%20GNS3-1BA0D7?logo=cisco&logoColor=white)
 ![Bash](https://img.shields.io/badge/Bash-CLI-4EAA25?logo=gnubash&logoColor=white)
 
 ---
@@ -21,6 +22,7 @@ Ce dépôt rassemble mes projets techniques les plus complets, réalisés pendan
 | 03 | [**Sécurisation d'un poste Windows multi-utilisateurs**](03-securisation-poste-windows-ntfs/) | Contrôle d'accès, durcissement | NTFS / icacls, secpol.msc, PowerShell |
 | 04 | [**Migration et sauvegarde d'un poste Windows**](04-migration-sauvegarde-windows-powershell/) | Inventaire, sauvegarde, restauration | PowerShell (registre, CIM), scripts |
 | 05 | [**Ubuntu : installation, mise à jour et sécurité de base**](05-ubuntu-installation-securisation/) | Linux, réseau, pare-feu | Ubuntu 26.04, apt, nmcli, UFW |
+| 06 | [**Routeurs Cisco sous GNS3 : DHCP et routage statique**](06-cisco-gns3-routage-dhcp/) | Réseau, routage, DHCP | GNS3, Cisco IOS, VPCS |
 
 ### En bref
 
@@ -29,6 +31,7 @@ Ce dépôt rassemble mes projets techniques les plus complets, réalisés pendan
 - **03 — Sécurisation Windows** : dossiers personnels cloisonnés par ACL NTFS, verrouillage de session, politique de mots de passe, puis tests d'accès croisés entre utilisateurs.
 - **04 — Migration** : inventaire complet en PowerShell (logiciels, réseau, comptes, VPN, certificats…), sauvegarde vérifiée par script, réinstallation et restauration. Les scripts sont dans [`scripts/`](04-migration-sauvegarde-windows-powershell/scripts/).
 - **05 — Ubuntu** : installation raisonnée en VM, mises à jour, diagnostic réseau, pare-feu UFW et revue des services.
+- **06 — Cisco / GNS3** : deux LAN reliés par deux routeurs Cisco, interfaces configurées en CLI IOS, DHCP sur chaque routeur, routage statique et dépannage méthodique.
 
 ---
 
@@ -39,7 +42,7 @@ Ce dépôt rassemble mes projets techniques les plus complets, réalisés pendan
 | **Virtualisation** | VMware ESXi, vCenter (VCSA), VMware Workstation, snapshots, datastores, virtualisation imbriquée |
 | **Systèmes Windows** | Installation, déploiement par image (Sysprep), comptes locaux, droits NTFS, stratégie de sécurité locale, migration |
 | **Systèmes Linux** | Ubuntu, gestion des paquets apt, services, partitionnement (parted, ext4) |
-| **Réseau** | Adressage IP statique / DHCP, DNS, NAT, diagnostic (`ipconfig`, `ip a`, `nmcli`, `ping`) |
+| **Réseau** | Routeurs Cisco (CLI IOS) sous GNS3, adressage IP statique / DHCP, routage statique, DNS, NAT, diagnostic (`ipconfig`, `ip a`, `nmcli`, `ping`) |
 | **Sécurité** | Principe du moindre privilège, cloisonnement des accès, politique de mots de passe, pare-feu UFW |
 | **Scripting** | PowerShell (inventaire, export, vérification), Bash |
 | **Documentation** | Procédures reproductibles, cahiers des charges, checklists de conformité |
